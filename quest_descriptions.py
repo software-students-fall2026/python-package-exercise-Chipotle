@@ -26,6 +26,11 @@ _EXERCISE_TEMPLATES = (
 _CHORE_KEYWORDS = frozenset(
     {"laundry", "dishes", "vacuum", "vacuuming", "sweep", "sweeping", "mop", "mopping"}
 )
+_CHORE_TEMPLATES = (
+    "Restore Order to the Kingdom",
+    "Polish the Royal Castle",
+    "Clear the Goblin Hideout",
+)
 _CLEANING_ACTIONS = frozenset({"clean", "cleaning", "tidy", "tidying"})
 _HOUSEHOLD_PLACES = frozenset(
     {"room", "rooms", "bedroom", "bathroom", "kitchen", "house", "home", "garage"}
@@ -42,10 +47,9 @@ def generate_fantasy_description(title: str, *, seed: int | None = None) -> str:
     a cleaning action alone does not match chores (e.g. "clean code").
     Other nonblank titles, including other languages, get a generic fallback.
     Without a seed, the original default descriptions are preserved.
-    An integer seed selects a repeatable study or exercise template using a
+    An integer seed selects a repeatable study, exercise, or chore template using a
     private random generator, without changing Python's global random state.
-    Chores and fallback keep one template. Different seeds may select the same
-    template.
+    The fallback keeps one template. Different seeds may select the same template.
     No AI service is used.
 
     Example: ``generate_fantasy_description("Study math", seed=7)``.
@@ -77,6 +81,8 @@ def generate_fantasy_description(title: str, *, seed: int | None = None) -> str:
     if words & _CHORE_KEYWORDS or (
         words & _CLEANING_ACTIONS and words & _HOUSEHOLD_PLACES
     ):
-        return "Restore Order to the Kingdom"
+        if seed is None:
+            return _CHORE_TEMPLATES[0]
+        return random.Random(seed).choice(_CHORE_TEMPLATES)
 
     return "Embark on a New Quest"
